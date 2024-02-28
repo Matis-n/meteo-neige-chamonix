@@ -76,7 +76,7 @@ if __name__ == "__main__":
         for year in years:
             # On récupère l'url
             key = departement + "_" + year + "_RR_T_V"
-            url = urls[departement]
+            url = urls[key]
             # Formation du nom du fichier à partir du template et du numéro de département
             filename = f"{template_start}{departement}{year}RR_T_V{template_end}"
             if download:
@@ -88,14 +88,15 @@ if __name__ == "__main__":
                 df = df_departement
                 i= i+1
             else:  # sinon concaténation du département suivant 
-                df= pd.concat([df, df_departement])  
+                df= pd.concat([df, df_departement]) 
+    df.to_csv(f"{folder_csv}/{template_start}{departement}RR_T_V{template_end}", sep=";", index=False) 
 
     i = 0
     for departement in departements:
         for year in years:
             # On récupère l'url
             key = departement + "_" + year + "other"
-            url = urls[departement]
+            url = urls[key]
             # Formation du nom du fichier à partir du template et du numéro de département
             filename = f"{template_start}{departement}{year}other{template_end}"
             if download:
@@ -108,5 +109,7 @@ if __name__ == "__main__":
                 i= i+1
             else:  # sinon concaténation du département suivant 
                 df= pd.concat([df, df_departement])  
+    df.to_csv(f"{folder_csv}/{template_start}{departement}RR_T_V{template_end}", sep=";", index=False) 
+
             
               
