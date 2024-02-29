@@ -117,24 +117,15 @@ if __name__ == "__main__":
 
     # Merge des 2 dfs 
     df = pd.merge(df1, df2.drop(columns=["LAT", "LON", "ALTI", "NOM_USUEL"]), on=["NUM_POSTE", "AAAAMMJJ"], how="inner")
-    print(df.info(verbose=True))
-    # preprocess
-    #columns of data
-    num_cols = df.select_dtypes(include=np.number).columns
-    cat_cols = df.select_dtypes(include='object').columns
-    #throw away categorical columns
-    df = df.drop(columns=cat_cols)
-    # df = df.drop(columns=['NUM_POSTE'])
+    # print(df.info(verbose=True))
 
     # columns with NEIG in name
-    neige_cols = [col for col in df.columns if 'NEIG' in col]
     y_target = 'NEIG'
-    y_covariate = neige_cols
-
     # NEIG = 0 if NEIGETOTX = 0 and 1 else
     df['NEIG'] = df['NEIG'].mask(df['NEIGETOTX'] == 0, 0)
     df['NEIG'] = df['NEIG'].mask(df['NEIGETOTX'] > 0, 1)
-    
+    df.dropna(subset=[y_target], inplace=True)
+
     # Train test split of df
     df_train, df_test = train_test_split(df, test_size=0.2, random_state=42, shuffle=True)
 

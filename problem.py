@@ -20,29 +20,23 @@ score_types = [
 
 def _get_data(path=".", split="train"):
     # Load data from csv files into pd.DataFrame
-    #
     # returns X (input) and y (output) arrays
 
     # read train or test data
-    data = pd.read_csv(os.path.join(path, "data", split + ".csv"))
+    data = pd.read_csv(os.path.join(path, "data", split + ".csv"), sep=";", decimal=".")
     # preprocess
     #columns of data
     num_cols = data.select_dtypes(include=np.number).columns
     cat_cols = data.select_dtypes(include='object').columns
+    # remove AAAAMMJJ from cat_cols
+    cat_cols = cat_cols.drop('AAAAMMJJ')
     #throw away categorical columns
     data = data.drop(columns=cat_cols)
     data = data.drop(columns=['NUM_POSTE'])
 
     y_target = 'NEIG'
-    # print columns with NEIG in name
+    # columns with NEIG in name
     y_covariates = [col for col in data.columns if 'NEIG' in col]
-  
-    # NEIG = 0 if NEIGETOTX = 0 and 1 else
-    data['NEIG'] = data['NEIG'].mask(data['NEIGETOTX'] == 0, 0)
-    data['NEIG'] = data['NEIG'].mask(data['NEIGETOTX'] > 0, 1)
-
-    data.dropna(subset=[y_target], inplace=True)
-
     X = data.drop(columns=y_covariates)
     #labels
     y = data[y_target].astype('int8')
