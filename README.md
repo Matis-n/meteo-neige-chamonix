@@ -1,6 +1,3 @@
-# meteo-neige-chamonix
-DataCamp Ramp Project
-
 # RAMP starting-kit on snow prediction in France from meteorological data
 
 
