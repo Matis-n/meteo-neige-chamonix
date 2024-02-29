@@ -4,8 +4,8 @@ import numpy as np
 import os
 import requests
 import gzip
-import shutil
 import datetime
+from sklearn.model_selection import train_test_split
 
 folder_gz = "data_gz"
 folder_csv = "data_csv"
@@ -62,12 +62,13 @@ if __name__ == "__main__":
         os.makedirs(folder_gz)
     if not os.path.exists(folder_csv):
         os.makedirs(folder_csv)
+    if not os.path.exists("data"):
+        os.makedirs("data")
 
     # Téléchargement/décompression/lecture des fichiers dans une boucle sur les départements (urls tirées du dictionnaire 'urls')
     i = 0
     departements= ["74"]
     years = ["2022", "2024"]
-    template_start = "postesEnService_"
     template_end = ".csv"
 
     download = True
@@ -78,38 +79,49 @@ if __name__ == "__main__":
             key = departement + "_" + year + "_RR_T_V"
             url = urls[key]
             # Formation du nom du fichier à partir du template et du numéro de département
-            filename = f"{template_start}{departement}{year}RR_T_V{template_end}"
+            filename = f"{departement}{year}RR_T_V{template_end}"
             if download:
                 download_file(url, filename)
                 decompress_gz(filename)
             # Lecture du fichier CSV dans un dataframe pandas
             df_departement= read_csv(filename)
             if i == 0: # pour le premier département, initialisation du dataframe final df       
-                df = df_departement
+                df1 = df_departement
                 i= i+1
             else:  # sinon concaténation du département suivant 
-                df= pd.concat([df, df_departement]) 
-    df.to_csv(f"{folder_csv}/{template_start}{departement}RR_T_V{template_end}", sep=";", index=False) 
+                df1= pd.concat([df1, df_departement]) 
+    df1.to_csv(f"{folder_csv}/{departement}RR_T_V{template_end}", sep=";", index=False) 
 
     i = 0
     for departement in departements:
         for year in years:
             # On récupère l'url
-            key = departement + "_" + year + "other"
+            key = departement + "_" + year + "_other"
             url = urls[key]
             # Formation du nom du fichier à partir du template et du numéro de département
-            filename = f"{template_start}{departement}{year}other{template_end}"
+            filename = f"{departement}{year}other{template_end}"
             if download:
                 download_file(url, filename)
                 decompress_gz(filename)
             # Lecture du fichier CSV dans un dataframe pandas
             df_departement= read_csv(filename)
             if i == 0: # pour le premier département, initialisation du dataframe final df       
-                df = df_departement
+                df2 = df_departement
                 i= i+1
             else:  # sinon concaténation du département suivant 
-                df= pd.concat([df, df_departement])  
-    df.to_csv(f"{folder_csv}/{template_start}{departement}RR_T_V{template_end}", sep=";", index=False) 
+                df2= pd.concat([df2, df_departement])  
+    df2.to_csv(f"{folder_csv}/{departement}neige{template_end}", sep=";", index=False) 
+
+    # Merge des 2 dfs 
+    df = pd.merge(df1, df2.drop(columns=["LAT", "LON", "ALTI", "NOM_USUEL"]), on=["NUM_POSTE", "AAAAMMJJ"], how="inner")
+
+    # Train test split of df
+    df_train, df_test = train_test_split(df, test_size=0.2, random_state=42, shuffle=True)
+
+    df_train.to_csv("data/train.csv", sep=";", index=False)
+    df_test.to_csv("data/test.csv", sep=";", index=False)
+
+    
 
             
               
