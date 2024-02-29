@@ -66,6 +66,8 @@ if __name__ == "__main__":
         os.makedirs("data")
 
     # Téléchargement/décompression/lecture des fichiers dans une boucle sur les départements (urls tirées du dictionnaire 'urls')
+    # Choix des départements et des années à télécharger
+    # Concaténation des dataframes sur les années et départements dans un dataframe final
     i = 0
     departements= ["74"]
     years = ["2022", "2024"]
@@ -110,11 +112,29 @@ if __name__ == "__main__":
                 i= i+1
             else:  # sinon concaténation du département suivant 
                 df2= pd.concat([df2, df_departement])  
+
     df2.to_csv(f"{folder_csv}/{departement}neige{template_end}", sep=";", index=False) 
 
     # Merge des 2 dfs 
     df = pd.merge(df1, df2.drop(columns=["LAT", "LON", "ALTI", "NOM_USUEL"]), on=["NUM_POSTE", "AAAAMMJJ"], how="inner")
+    print(df.info(verbose=True))
+    # preprocess
+    #columns of data
+    num_cols = df.select_dtypes(include=np.number).columns
+    cat_cols = df.select_dtypes(include='object').columns
+    #throw away categorical columns
+    df = df.drop(columns=cat_cols)
+    # df = df.drop(columns=['NUM_POSTE'])
 
+    # columns with NEIG in name
+    neige_cols = [col for col in df.columns if 'NEIG' in col]
+    y_target = 'NEIG'
+    y_covariate = neige_cols
+
+    # NEIG = 0 if NEIGETOTX = 0 and 1 else
+    df['NEIG'] = df['NEIG'].mask(df['NEIGETOTX'] == 0, 0)
+    df['NEIG'] = df['NEIG'].mask(df['NEIGETOTX'] > 0, 1)
+    
     # Train test split of df
     df_train, df_test = train_test_split(df, test_size=0.2, random_state=42, shuffle=True)
 

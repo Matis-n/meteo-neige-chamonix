@@ -49,7 +49,7 @@ def _get_data(path=".", split="train"):
     return X, y
 
 
-groups = None
+# groups = None
 
 
 # Here we will define a global variable (groups) to be used in get_cv
