@@ -119,6 +119,7 @@ if __name__ == "__main__":
     df = pd.merge(df1, df2.drop(columns=["LAT", "LON", "ALTI", "NOM_USUEL"]), on=["NUM_POSTE", "AAAAMMJJ"], how="inner")
     # print(df.info(verbose=True))
 
+    # Fill NEIG column with NEIGETOTX
     # columns with NEIG in name
     y_target = 'NEIG'
     # NEIG = 0 if NEIGETOTX = 0 and 1 else

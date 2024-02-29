@@ -9,7 +9,6 @@ class Classifier(BaseEstimator):
         self.transformer = Pipeline(
             steps=[("scaler", MinMaxScaler())]
         )
-
         self.model = XGBClassifier()
         self.pipe = make_pipeline(self.transformer, self.model)
 

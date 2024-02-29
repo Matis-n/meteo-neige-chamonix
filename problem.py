@@ -25,12 +25,13 @@ def _get_data(path=".", split="train"):
     # read train or test data
     data = pd.read_csv(os.path.join(path, "data", split + ".csv"), sep=";", decimal=".")
     # preprocess
-    #columns of data
+    # numerical and categorical columns
     num_cols = data.select_dtypes(include=np.number).columns
     cat_cols = data.select_dtypes(include='object').columns
-    ## remove AAAAMMJJ from cat_cols
+
+    # keep date column
     # cat_cols = cat_cols.drop('AAAAMMJJ')
-    #throw away categorical columns
+    # throw away categorical columns
     data = data.drop(columns=cat_cols)
     data = data.drop(columns=['NUM_POSTE'])
 
@@ -42,19 +43,7 @@ def _get_data(path=".", split="train"):
     y = data[y_target].astype('int8')
     return X, y
 
-
-# groups = None
-
-
-# Here we will define a global variable (groups) to be used in get_cv
-# for the SGKF CV strategy
 def get_train_data(path="."):
-    # data = pd.read_csv(os.path.join(path, "data", "train.csv"))
-    # data = data.copy()
-    # data["SampleID"] = data["SampleID"].astype("category")
-    # SampleID = np.array(data["SampleID"].cat.codes)
-    # global groups
-    # groups = SampleID
     return _get_data(path, "train")
 
 
