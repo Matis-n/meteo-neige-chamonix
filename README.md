@@ -1,4 +1,4 @@
-# RAMP starting-kit on snow prediction in France from meteorological data
+# RAMP starting-kit on snow events prediction in France from meteorological data
 
 
 Authors : Matis NANNI, Soulaimane Elmennaoui, Busra Bulut, Nils Reynaud
