@@ -28,8 +28,8 @@ def _get_data(path=".", split="train"):
     #columns of data
     num_cols = data.select_dtypes(include=np.number).columns
     cat_cols = data.select_dtypes(include='object').columns
-    # remove AAAAMMJJ from cat_cols
-    cat_cols = cat_cols.drop('AAAAMMJJ')
+    ## remove AAAAMMJJ from cat_cols
+    # cat_cols = cat_cols.drop('AAAAMMJJ')
     #throw away categorical columns
     data = data.drop(columns=cat_cols)
     data = data.drop(columns=['NUM_POSTE'])

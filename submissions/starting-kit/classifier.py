@@ -14,9 +14,10 @@ class Classifier(BaseEstimator):
         self.pipe = make_pipeline(self.transformer, self.model)
 
     def fit(self, X, y):
-        X.drop(columns=["AAAAMMJJ"], inplace=True)
         self.pipe.fit(X, y)
 
     def predict(self, X):
-        X.drop(columns=["AAAAMMJJ"], inplace=True)
         return self.pipe.predict(X)
+    
+    def predict_proba(self, X):
+        return self.pipe.predict_proba(X)
